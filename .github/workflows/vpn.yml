@@ -48,4 +48,4 @@ jobs:
           echo "YOUR URL:"
           grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' tunnel.log | head -1
           echo "=========================================="
-          sleep 340
+          sleep 20400
