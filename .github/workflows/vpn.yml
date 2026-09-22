@@ -1,0 +1,51 @@
+name: VPN
+on:
+  workflow_dispatch:
+
+jobs:
+  vpn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Install Xray
+        run: |
+          sudo bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+      
+      - name: Config Xray
+        run: |
+          sudo tee /usr/local/etc/xray/config.json > /dev/null << 'EOF'
+          {
+            "log": {"loglevel": "warning"},
+            "inbounds": [{
+              "listen": "127.0.0.1",
+              "port": 8080,
+              "protocol": "vless",
+              "settings": {
+                "clients": [{"id": "84675d0f-2ce0-4dd2-826d-0277fbdefcad"}],
+                "decryption": "none"
+              },
+              "streamSettings": {
+                "network": "ws",
+                "wsSettings": {"path": "/ws"}
+              }
+            }],
+            "outbounds": [{"protocol": "freedom"}]
+          }
+          EOF
+          sudo systemctl restart xray
+          sleep 3
+      
+      - name: Install cloudflared
+        run: |
+          wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O cloudflared
+          chmod +x cloudflared
+      
+      - name: Start Tunnel
+        run: |
+          ./cloudflared tunnel --url http://127.0.0.1:8080 > tunnel.log 2>&1 &
+          sleep 30
+          echo "=========================================="
+          echo "YOUR URL:"
+          grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' tunnel.log | head -1
+          echo "=========================================="
+          sleep 340
