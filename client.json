@@ -1,0 +1,33 @@
+{
+  "log": {"loglevel": "warning"},
+  "inbounds": [{
+    "listen": "127.0.0.1",
+    "port": 10808,
+    "protocol": "socks",
+    "settings": {"udp": true}
+  }],
+  "outbounds": [{
+    "protocol": "vless",
+    "settings": {
+      "vnext": [{
+        "address": "127.0.0.1",
+        "port": 8443,
+        "users": [{
+          "id": "84675d0f-2ce0-4dd2-826d-0277fbdefcad",
+          "flow": "xtls-rprx-vision",
+          "encryption": "none"
+        }]
+      }]
+    },
+    "streamSettings": {
+      "network": "tcp",
+      "security": "reality",
+      "realitySettings": {
+        "serverName": "www.cloudflare.com",
+        "fingerprint": "chrome",
+        "publicKey": "mmbh46hAREVnc8FYWMs8yhmCYm8I4LIwlaNE3ZAPHD4",
+        "shortId": "0123456789abcdef"
+      }
+    }
+  }]
+}
